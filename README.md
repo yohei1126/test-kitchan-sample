@@ -1,7 +1,7 @@
 # ツールのインストール
 
 ## Chef Development Kitのインストール
-執筆時点で最新はは 0.4.0
+執筆時点で最新はは 0.5.1
 https://downloads.chef.io/chef-dk/
 **インストール後に eval "$(chef shell-init zsh)" をやらない。これをやるとkitchen-vagrantが見つからなくなる。
 Chef DK に付属のRubyを使う。
