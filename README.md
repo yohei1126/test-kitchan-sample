@@ -8,7 +8,7 @@
 
 ## Chef によるレシピ開発で利用するテスト用ツール
 
-Chef-DK（Chef の開発環境）には Chef のレシピをテストするためのツールが最初から梱包されています。本記事では Chef-DK に梱包されたツールおよび外部ツールを使い、仮想環境構築をテストする方法を紹介します。
+Chef Development Kit（Chef の開発環境、以降 Chef DKと省略）には Chef のレシピをテストするためのツールが最初から梱包されています。本記事では Chef-DK に梱包されたツールおよび外部ツールを使い、仮想環境構築をテストする方法を紹介します。
 
 <dl>
   <dt>Test Kitchen</dt>
@@ -27,6 +27,34 @@ Chef-DK（Chef の開発環境）には Chef のレシピをテストするた�
 
 ![テスト駆動開発](http://www.techmatrix.co.jp/quality/concerto/hint/images/hint_agile02_1.jpg "テスト駆動開発")
 
+## 開発環境の準備
 
+ここから実際に Chef レシピ開発に必要な開発環境を用意していきます。本記事では以下のツールを使います。
 
+* Chef DK 0.5.1
+ ** レシピ開発では Chef DK に梱包されている Chef、TestKitchen、Berksfhelf を利用 
+* Vagrant 1.7.2
+* VirtualBox 4.3.26
+
+### Chef DK のインストール
+
+以下の URL からインストーラをダウンロードして、インストールを行って下さい。2015 年 5 月時点の最新バージョンでは 0.5.1 です。
+https://downloads.chef.io/chef-dk/
+
+Chef のレシピ開発では、Chef DK に梱包されている Ruby に PATH を通す必要があります。以下のコマンドを使うと Chef を使うための初期設定が行われます。筆者の場合、シェルは zsh を使っていますが、別のシェルを使っている場合はシェル名部分を変更してください。
+
+```
+eval "$(chef shell-init zsh)"
+```
+
+### Vagrant のインストール
+
+以下の URL からインストーラをダウンロードして、実行してください。2015 年 5 月時点の最新バージョンは 1.7.2 です。
+https://www.vagrantup.com/downloads.html
+
+### VirtualBox のインストール
+
+以下の URL からインストーラをダウンロードして、実行してください。2015 年 5 月時点の最新バージョンは 4.3.26 です。
+
+https://www.virtualbox.org/
 
