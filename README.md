@@ -227,9 +227,9 @@ default-centos-64    Vagrant  ChefSolo     Busser    Ssh        <Not Created>
 
 次に実際にテストコードが成功するレシピを実際に作成します。.kitchen.yml に書いた通り、default という名前でレシピを作成します。
 
+```
 % mkdir recipes
 % vim recipes/default.rb
-```
 include_recipe "runit"
 
 package "git-daemon-run"
