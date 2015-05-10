@@ -41,7 +41,7 @@ Chef Development Kit（Chef の開発環境、以降 Chef DKと省略）には C
 ここから実際に Chef レシピ開発に必要な開発環境を用意していきます。本記事では以下のツールを使います。
 
 * Chef DK 0.5.1
- * レシピ開発では Chef DK に梱包されている Chef、TestKitchen、Berksfhelf を利用 
+ * レシピ開発では Chef DK に梱包されている Chef、Test Kitchen、Berksfhelf を利用 
 * Vagrant 1.7.2
 * VirtualBox 4.3.26
 
@@ -69,3 +69,26 @@ https://www.vagrantup.com/downloads.html
 
 https://www.virtualbox.org/
 
+以上で開発環境の構築は完了です。
+
+## Test Kitchen 用設定の初期化
+
+ここから実際に前述のテスト駆動開発の流れにそってレシピを開発します。一番最初に Test Kitchen の各種設定を準備する必要があります。
+
+まず、レシピやテストコードを配置するディレクトリを用意してください。
+
+```
+% mkdir git-cookbook
+% cd git-cookbook
+```
+
+以下のコマンドで Test Kitchen の設定ファイルを用意します。
+
+```
+% kitchen init                                                                                                           create  .kitchen.yml
+      create  test/integration/default
+Fetching: kitchen-vagrant-0.18.0.gem (100%)
+Successfully installed kitchen-vagrant-0.18.0
+```
+
+標準出力にある通り、kitchen-vagrant-0.18.0.gem という Gem がインストールされています。これは Test Kitchen から Vagrant を呼び出し、仮想環境を操作するためのプラグインです。Test Kitchen を使った仮想環境構築のドライバは Vagrant のため、初期化時に kitchen-vagrant がインストールされていない場合はインストールされます。
