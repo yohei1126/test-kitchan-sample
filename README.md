@@ -23,7 +23,7 @@ Chef Development Kit（Chef の開発環境、以降 Chef DKと省略）には C
   <dt>Test Kitchen</dt>
   <dd>Chef-DK に梱包されている統合テスティングフレームワーク。Chef のレシピをテストする際のフロントエンドになります。Test Kitchen を通じて Vagrant による仮想環境の構築、テストツールを使ったレシピのテストを行うことができます。</dd>
   <dt>Serverspec</dt>
-  <dd>元々は Chef とは無関係なツールです。RSpec 風のテストコードで環境構築結果を確認できるため、レシピの実行結果が期待通りか確認する結合テストツールとして利用します。</dd>
+  <dd>元々は Chef とは無関係なツールです。RSpec 風のテストコードで環境構築結果を確認できます。レシピの実行結果が期待通りか確認する結合テストツールとして利用します。テストコードは OS 非依存であるため、1回テストすれば色々な OS に対して利用できます。</dd>
 </dl>
 
 ## テスト駆動による Chef レシピの開発
@@ -71,7 +71,7 @@ https://www.virtualbox.org/
 
 以上で開発環境の構築は完了です。
 
-## Test Kitchen 用設定の初期化
+## Test Kitchen 用設定の準備
 
 ここから実際に前述のテスト駆動開発の流れにそってレシピを開発します。一番最初に Test Kitchen の各種設定を準備する必要があります。
 
@@ -99,7 +99,7 @@ Successfully installed kitchen-vagrant-0.18.0
 * test/integration/default
  * 結合テストのテストコード置き場
 
-さらに、 kitchen-vagrant-0.18.0.gem という Gem がインストールされています。これは Test Kitchen から Vagrant を呼び出し、仮想環境を操作するためのプラグインです。Test Kitchen を使った仮想環境構築のドライバのデフォルトは Vagrant のため、初期化時に kitchen-vagrant がインストールされていない場合はインストールされます。
+さらに、 kitchen-vagrant-0.18.0.gem という Gem がインストールされています。これは Test Kitchen から Vagrant を呼び出し、仮想環境を操作するためのプラグインです。Test Kitchen を使った仮想環境構築のドライバのデフォルトは Vagrant のため、初期化時に kitchen-vagrant がインストールされていない場合は自動的にインストールされます。
 
 作成された .kitchen.yml を開いてみると、内容は以下のようになっています。
 
@@ -132,3 +132,14 @@ suites:
 * suites
   * Test Kitchen が構築するテストスイートについて記述します。
   * デフォルトでは default というスイートが用意されており、実行対象のレシピ（run_list）と実行時にレシピに渡される属性（attributes）はありません。
+
+初期状態では実行対象のレシピがないため、default の run_list に以下を追記しておきます。
+
+```
+suites:
+  - name: default
+    run_list:
+      - recipe[git::default]
+    attributes:
+```
+
