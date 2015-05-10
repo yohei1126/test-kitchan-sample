@@ -226,10 +226,11 @@ default-centos-64    Vagrant  ChefSolo     Busser    Ssh        <Not Created>
 
 ## テストが成功するレシピを作成する
 
+次に実際にテストコードが成功するレシピを実際に作成します。.kitchen.yml に書いた通り、default という名前でレシピを作成します。
+
 % mkdir recipes
 % vim recipes/default.rb
 ```
-include_recipe "git"
 include_recipe "runit"
 
 package "git-daemon-run"
@@ -238,6 +239,13 @@ runit_service "git-daemon" do
   sv_templates false
 end
 ```
+
+レシピの内容は以下の通りです。
+* runit クックブックをインストールしています。runit はデーモンを起動するためのツールです。
+* git-daemon-run パッケージをインストールしています。こちらは git のデーモン用パッケージです。
+* 最後に "git-daemon" という runit service を宣言しています。これでデーモンを起動できます。
+
+次に実際にテストしてみると、この段階では、ローカルのリポジトリに runit クックブックが存在しないため、エラーが出ます。
 
 ```
 % kitchen verify ubuntu
@@ -269,23 +277,104 @@ end
 （省略）
 ```
 
-metadata.rb に runit への依存関係を追記する。
+以前に書いた記事の通り、Chef ではクックブックの依存関係を自動的に解決するツールとして Berkshelf を利用します。以下のように Berkshelf の設定ファイル Berksfile を用意します。
+
+ここでは以下のことを Berkshelf に指示しています。
+* 依存先のクックブックを公開リポジトリである https://supermarket.chef.io metadata.rb から取得する。
+* クックブックの依存関係を metadata.rb に記述する。
 
 ```
+% vim Berksfile
+source "https://supermarket.chef.io"
+
+metadata
+```
+
+次に metadata.rb に git クックブックの依存関係を記述します。runit クックブックのバージョンは検証できている 1.4.0 以上と指定しました。
+
+```
+% vim metadata.rb
 name "git"
 version "0.1.0"
 
 depends "runit", "~> 1.4.0"
 ```
 
+次にテストを実行するとテストが成功する旨が表示されます。
+
 ```
 % kitchen verify ubuntu
-ERROR: Cookbook runit not found.
+（省略）
+Finished verifying <default-ubuntu-1204> 
+（省略）
 ```
 
-```
-% vim Berksfile
-source "https://api.berkshelf.com"
+次に CentOS についてもテストが成功するか確認してみましょう。
 
-metadata
+```
+% kitchen verify centos
+（省略）
+Chef::Exceptions::Package
+           -------------------------
+           No candidate version available for git-daemon-run
+（省略）
+```
+
+どうやら Ubuntu と CentOS は git-daemon のパッケージ名が異なるため、同じパッケージ名で両方の OS に対してパッケージをインストールできないようです。以下のようにレシピ中でプラットフォームごとに適切なパッケージ名を使うように変更しましょう。
+
+```
+include_recipe "runit"
+ 
+package "git-daemon" do
+  case node[:platform]
+  when "centos"
+    package_name "git-daemon"
+  when "ubuntu"
+    package_name "git-daemon-run"
+  end
+  action :install
+end
+ 
+runit_service "git-daemon" do
+  sv_templates false
+end
+```
+
+テストを再度実行すると今度は問題ないことが確認できました。
+
+```
+% kitchen verify centos
+```
+
+## リファクタリングする
+
+前述の変更でテストが成功するようになりましたが、レシピ中にプラットフォームごとの条件分岐を行うやり方はあまり良い方法ではありません。現在、条件分岐は 1 箇所ですが、今後増えていくとレシピの保守性が悪くなっていきます。
+
+そこで Chef の attribute （変数）という機能を使ってパッケージ名を外部設定ファイルから与えられるようにします。
+
+まず以下のように attributes/default.rb というファイルを記述し、プラットフォームごとのパッケージを表す attributes の配列を用意します。今後はプラットフォームが増えていけば、attributes 配列を増やしていくことになります。
+
+```
+% mkdir attributes
+% vim attributes/default.rb
+default["gitdaemon"]["centos"] = "git-daemon"
+default["gitdaemon"]["ubuntu"] = "git-daemon-run"
+```
+
+レシピ側では、例えば、node["gitdaemon"]["centos"]という書式で CentOS 上での git-daemon のパッケージ名にアクセスできます。プラットフォーム名の文字列は、デフォルトで node[:platform] で取得できるため、これを利用することによりプラットフォームごとの条件分岐を排除できます。
+
+```
+include_recipe "runit"
+ 
+package node["gitdaemon"][node[:platform]]
+ 
+runit_service "git-daemon" do
+  sv_templates false
+end
+```
+
+以上でリファクタリングは終了です。一旦、作成済みのインスタンスを破棄し、作りなおした上でレシピのテストを実行してみましょう。kitchen test コマンドを使うと、各インスタンスに対してインスタンスの破棄、レシピ実行、テスト実行を行ってくれます。
+
+```
+% kitchen test
 ```
