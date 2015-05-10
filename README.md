@@ -1,4 +1,4 @@
-# Vagrant と Chef による仮想環境構築の自動化（TestKitchenによるテスト駆動インフラ構築編）
+# Vagrant と Chef による仮想環境構築の自動化 〜 TestKitchenによるテスト駆動インフラ構築編〜
 
 ※見出しを記述する
 
