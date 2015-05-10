@@ -32,7 +32,7 @@ Chef Development Kit（Chef の開発環境、以降 Chef DKと省略）には C
 ここから実際に Chef レシピ開発に必要な開発環境を用意していきます。本記事では以下のツールを使います。
 
 * Chef DK 0.5.1
- ** レシピ開発では Chef DK に梱包されている Chef、TestKitchen、Berksfhelf を利用 
+ * レシピ開発では Chef DK に梱包されている Chef、TestKitchen、Berksfhelf を利用 
 * Vagrant 1.7.2
 * VirtualBox 4.3.26
 
