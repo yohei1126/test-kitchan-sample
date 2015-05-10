@@ -85,10 +85,50 @@ https://www.virtualbox.org/
 以下のコマンドで Test Kitchen の設定ファイルを用意します。
 
 ```
-% kitchen init                                                                                                           create  .kitchen.yml
+% kitchen init
+      create  .kitchen.yml
       create  test/integration/default
 Fetching: kitchen-vagrant-0.18.0.gem (100%)
 Successfully installed kitchen-vagrant-0.18.0
 ```
 
-標準出力にある通り、kitchen-vagrant-0.18.0.gem という Gem がインストールされています。これは Test Kitchen から Vagrant を呼び出し、仮想環境を操作するためのプラグインです。Test Kitchen を使った仮想環境構築のドライバは Vagrant のため、初期化時に kitchen-vagrant がインストールされていない場合はインストールされます。
+標準出力にある通り、以下の2つが作成されています。
+
+* .kitchen.yml
+ * Test Kitchen の設定ファイル
+* test/integration/default
+ * 結合テストのテストコード置き場
+
+さらに、 kitchen-vagrant-0.18.0.gem という Gem がインストールされています。これは Test Kitchen から Vagrant を呼び出し、仮想環境を操作するためのプラグインです。Test Kitchen を使った仮想環境構築のドライバのデフォルトは Vagrant のため、初期化時に kitchen-vagrant がインストールされていない場合はインストールされます。
+
+作成された .kitchen.yml を開いてみると、内容は以下のようになっています。
+
+```
+driver:
+  name: vagrant
+ 
+provisioner:
+  name: chef_solo
+ 
+platforms:
+  - name: ubuntu-12.04
+  - name: centos-6.4
+ 
+suites:
+   - name: default
+     run_list:
+     attributes:
+```
+
+上から順番に説明していくと、
+* driver
+ * Test Kitchen が仮想環境構築を委託するドライバの名前です。デフォルトでは vagrant です。
+* provisioner
+ * Test Kitchen がプロビジョニングで使うツールの名前です。デフォルトは chef_solo です。
+* platforms
+  * 構築対象のプラットフォームを記述します。デフォルトでは Ubuntu 12.04 と centos 6.4 が対象になっています。
+  * 本項目に記述できるプラットフォームは以下で確認できます。
+    * https://github.com/chef/bento
+* suites
+  * Test Kitchen が構築するテストスイートについて記述します。
+  * デフォルトでは default というスイートが用意されており、実行対象のレシピ（run_list）と実行時にレシピに渡される属性（attributes）はありません。
