@@ -126,8 +126,8 @@ suites:
 * provisioner
  * Test Kitchen がプロビジョニングで使うツールの名前です。デフォルトは chef_solo です。
 * platforms
-  * 構築対象のプラットフォームを記述します。デフォルトでは Ubuntu 12.04 と centos 6.4 が対象になっています。
-  * 本項目に記述できるプラットフォームは以下で確認できます。
+  * 構築対象のプラットフォームを記述します。デフォルトでは Ubuntu 12.04 と Centos 6.4 が対象になっています。
+  * 上記 2 つのプロジェクトの他に、Bento というプロジェクトで提供されている Vagrant 用 box が利用できます。
     * https://github.com/chef/bento
 * suites
   * Test Kitchen が構築するテストスイートについて記述します。
