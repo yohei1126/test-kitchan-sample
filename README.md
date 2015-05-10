@@ -13,7 +13,7 @@
 git-daemon の man ページ によると、受入れ基準は以下の通りです。この受入れ基準を満たすように Chef のレシピを開発します。
 
 * プロセスは、Git デーモンのデフォルトポートである 9418 番ポートで待ち受けする。
-* サービスの名前は "git-daemon"
+* サービスの名前は "git-daemon"。
 
 ## Chef によるレシピ開発で利用するテスト用ツール
 
@@ -33,6 +33,8 @@ Chef Development Kit（Chef の開発環境、以降 Chef DKと省略）には C
 * 期待するレシピの結果テストコードで記述する。この時点ではレシピが作成されていないため、テストは失敗する。
 * テストが成功するようなレシピを作成し、テストを通す。
 * リファクタリング（外部の振る舞いは変更せずに内部の構造を整理する）を行い、テストが通ることを確認する。
+
+得られる効果としては、最初にテストを書くことで、期待する振る舞いを明確に出来る点、テストで保護しながら安全にリファクタリング出来る点が挙げられます。
 
 ![テスト駆動開発](http://www.techmatrix.co.jp/quality/concerto/hint/images/hint_agile02_1.jpg "テスト駆動開発")
 
@@ -142,4 +144,34 @@ suites:
       - recipe[git::default]
     attributes:
 ```
+
+## serverspec によるテストコードを作成する
+
+前述のテスト駆動開発の手順の通り、最初にテストコードを記述することで、期待する振る舞いを明確に定義します。
+
+```
+% mkdir -p test/integration/server/serverspec
+% vim test/integration/server/serverspec/git_daemon_spec.rb
+require 'serverspec'
+
+# Required by serverspec
+set :backend, :exec
+
+describe "Git Daemon" do
+
+  it "is listening on port 9418" do
+    expect(port(9418)).to be_listening
+  end
+
+  it "has a running service of git-daemon" do
+    expect(service("git-daemon")).to be_running
+  end
+
+end
+```
+
+テストコードでは、前述の要件 2 点について確認しています。
+
+* プロセスは、Git デーモンのデフォルトポートである 9418 番ポートで待ち受けする。
+* サービスの名前は "git-daemon"。
 
