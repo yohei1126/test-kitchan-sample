@@ -1,4 +1,4 @@
-# Vagrant と Chef による仮想環境構築の自動化 〜 TestKitchenによるテスト入門編〜
+# Vagrant と Chef による仮想環境構築の自動化 〜 TestKitchenによるテスト駆動仮想環境構築編〜
 
 ※見出しを記述する
 
@@ -46,6 +46,7 @@ Chef Development Kit（Chef の開発環境、以降 Chef DKと省略）には C
  * レシピ開発では Chef DK に梱包されている Chef、Test Kitchen、Berksfhelf を利用 
 * Vagrant 1.7.2
 * VirtualBox 4.3.26
+ * 今回は VirtualBox を使い、ローカルで仮想環境を構築します。
 
 ### Chef DK のインストール
 
@@ -223,3 +224,68 @@ default-ubuntu-1204  Vagrant  ChefSolo     Busser    Ssh        Created
 default-centos-64    Vagrant  ChefSolo     Busser    Ssh        <Not Created>
 ```
 
+## テストが成功するレシピを作成する
+
+% mkdir recipes
+% vim recipes/default.rb
+```
+include_recipe "git"
+include_recipe "runit"
+
+package "git-daemon-run"
+
+runit_service "git-daemon" do
+  sv_templates false
+end
+```
+
+```
+% kitchen verify ubuntu
+（省略）
+       ================================================================================
+       Recipe Compile Error in /tmp/kitchen/cookbooks/git/recipes/default.rb
+       ================================================================================
+       
+       Chef::Exceptions::CookbookNotFound
+       ----------------------------------
+       Cookbook runit not found. If you're loading runit from another cookbook, make sure you configure the dependency in your metadata
+       
+       Cookbook Trace:
+       ---------------
+         /tmp/kitchen/cookbooks/git/recipes/default.rb:1:in `from_file'
+       
+       Relevant File Content:
+       ----------------------
+       /tmp/kitchen/cookbooks/git/recipes/default.rb:
+       
+         1>> include_recipe "runit"
+         2:  
+         3:  package "git-daemon-run"
+         4:  
+         5:  runit_service "git-daemon" do
+         6:    sv_templates false
+         7:  end
+         8:  
+（省略）
+```
+
+metadata.rb に runit への依存関係を追記する。
+
+```
+name "git"
+version "0.1.0"
+
+depends "runit", "~> 1.4.0"
+```
+
+```
+% kitchen verify ubuntu
+ERROR: Cookbook runit not found.
+```
+
+```
+% vim Berksfile
+source "https://api.berkshelf.com"
+
+metadata
+```
