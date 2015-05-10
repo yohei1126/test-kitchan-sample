@@ -39,6 +39,7 @@ Chef Development Kit（Chef の開発環境、以降 Chef DKと省略）には C
 ### Chef DK のインストール
 
 以下の URL からインストーラをダウンロードして、インストールを行って下さい。2015 年 5 月時点の最新バージョンでは 0.5.1 です。
+
 https://downloads.chef.io/chef-dk/
 
 Chef のレシピ開発では、Chef DK に梱包されている Ruby に PATH を通す必要があります。以下のコマンドを使うと Chef を使うための初期設定が行われます。筆者の場合、シェルは zsh を使っていますが、別のシェルを使っている場合はシェル名部分を変更してください。
@@ -50,6 +51,7 @@ eval "$(chef shell-init zsh)"
 ### Vagrant のインストール
 
 以下の URL からインストーラをダウンロードして、実行してください。2015 年 5 月時点の最新バージョンは 1.7.2 です。
+
 https://www.vagrantup.com/downloads.html
 
 ### VirtualBox のインストール
